@@ -1,0 +1,44 @@
+name: sportal
+description: "A new Flutter project."
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.7.2 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  intl: ^0.18.1 # For date/time formatting
+  flutter_riverpod: ^2.4.9 # State management (optional but recommended)
+  go_router: ^12.0.0 # Navigation (optional)
+  http: ^1.1.0 # API calls
+  shared_preferences: ^2.2.2 # Local storage
+  fluttertoast: ^8.2.2 # Toast notifications
+  image_picker: ^1.0.4 # For image selection
+  cached_network_image: ^3.3.0 # For efficient image loading
+  uuid: ^3.0.7 # For generating unique IDs
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.6 # For code generation
+  mockito: ^5.4.2 # For testing (if needed)
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    # - ./assets/images/ # Example asset directory
+    # - assets/icons/
+
+  # Uncomment if using custom fonts
+  # fonts:
+  #   - family: YourFontFamily
+  #     fonts:
+  #       - asset: assets/fonts/YourFont-Regular.ttf
+  #       - asset: assets/fonts/YourFont-Bold.ttf
+  #         weight: 700
