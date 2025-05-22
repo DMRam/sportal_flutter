@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sportal/features/home/home_screen.dart';
+import 'package:sportal/core/routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +14,8 @@ class MyApp extends StatelessWidget {
       title: 'Sportal',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: const Sportal(),
+      initialRoute: '/', 
+      onGenerateRoute: AppRouter.generateRoute, 
       debugShowCheckedModeBanner: false,
     );
   }

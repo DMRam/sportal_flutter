@@ -7,7 +7,6 @@ import 'package:sportal/features/home/presentation/widgets/profile_tab.dart';
 import 'package:sportal/features/home/presentation/widgets/setting_tab.dart';
 import 'package:sportal/features/navigation/app_drawer.dart';
 import 'package:sportal/features/navigation/bottom_nav.dart';
-import 'package:sportal/features/navigation/top_nav.dart';
 
 class Sportal extends StatefulWidget {
   const Sportal({super.key});

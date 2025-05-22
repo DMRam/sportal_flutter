@@ -72,7 +72,7 @@ class SportalDrawer extends StatelessWidget {
           _buildDrawerItem(Icons.account_circle, 'Profile', () {}),
           _buildDrawerItem(Icons.exit_to_app, 'Settings', () {}),
           const Divider(color: Colors.white24, height: 30),
-          _buildDrawerItem(Icons.exit_to_app, 'Logout', () {}),
+          _buildDrawerItem(Icons.exit_to_app, 'Logout', () {Navigator.pushNamed(context, '/');}),
         ],
       ),
     );
