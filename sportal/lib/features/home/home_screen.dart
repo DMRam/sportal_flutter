@@ -149,90 +149,93 @@ class _SportalScreenState extends State<Sportal>
   Widget build(BuildContext context) {
     final theme = _isDarkMode ? DarkTheme() : LightTheme();
 
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: theme.backgroundColor,
-        appBar: AppBar(
-          toolbarHeight: 90,
-          iconTheme: IconThemeData(
-            color:
-                Theme.of(context).brightness == Brightness.light
-                    ? Colors.deepPurpleAccent
-                    : Colors.white,
-          ),
-          backgroundColor: theme.appBarColor,
-          title: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            child: Text(
-              'SPORTAL',
-              key: ValueKey<bool>(_isDarkMode),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                letterSpacing: 1.5,
-                color: theme.primaryTextColor,
-                shadows: [
-                  Shadow(
-                    blurRadius: 10,
-                    color: theme.primaryColor.withOpacity(0.5),
-                  ),
-                ],
+    return PopScope(
+      canPop: false,
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: theme.backgroundColor,
+          appBar: AppBar(
+            toolbarHeight: 90,
+            iconTheme: IconThemeData(
+              color:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Colors.deepPurpleAccent
+                      : Colors.white,
+            ),
+            backgroundColor: theme.appBarColor,
+            title: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: Text(
+                'SPORTAL',
+                key: ValueKey<bool>(_isDarkMode),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  letterSpacing: 1.5,
+                  color: theme.primaryTextColor,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 10,
+                      color: theme.primaryColor.withOpacity(0.5),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child:
-                    _isDarkMode
-                        ? const Icon(Icons.wb_sunny, key: ValueKey('sun'))
-                        : const Icon(
-                          Icons.nightlight_round,
-                          key: ValueKey('moon'),
-                        ),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child:
+                      _isDarkMode
+                          ? const Icon(Icons.wb_sunny, key: ValueKey('sun'))
+                          : const Icon(
+                            Icons.nightlight_round,
+                            key: ValueKey('moon'),
+                          ),
+                ),
+                onPressed: _toggleTheme,
               ),
-              onPressed: _toggleTheme,
-            ),
-          ],
-          // bottom: TopTabBar(theme: theme),
+            ],
+            // bottom: TopTabBar(theme: theme),
+          ),
+          drawer: SportalDrawer(
+            theme: theme,
+            userName: 'Danny Sportal',
+            email: 'danny@sportal.com',
+            avatarUrl: 'https://your-avatar-url.com/avatar.png',
+          ),
+          bottomNavigationBar: SportalBottomNavBar(
+            theme: theme,
+            currentIndex: _currentIndex,
+            onTap: _onBottomNavTap,
+          ),
+          body: TabBarView(
+            children: [
+              // Tab 1: Home
+              buildHomeTab(theme),
+      
+              // Tab 2: Profile
+              ProfileTab(theme: theme),
+      
+              // Tab 3: Settings
+              SettingsTab(
+                theme: theme,
+                isDarkMode: _isDarkMode,
+                toggleTheme: _toggleTheme,
+              ),
+            ],
+          ),
+          floatingActionButton: SportalFloatingActionButton(
+            theme: theme,
+            showEventDialog:
+                true, // This will make it show the dialog when pressed
+          ),
+          // Optional: Position the FAB
+          floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
         ),
-        drawer: SportalDrawer(
-          theme: theme,
-          userName: 'Danny Sportal',
-          email: 'danny@sportal.com',
-          avatarUrl: 'https://your-avatar-url.com/avatar.png',
-        ),
-        bottomNavigationBar: SportalBottomNavBar(
-          theme: theme,
-          currentIndex: _currentIndex,
-          onTap: _onBottomNavTap,
-        ),
-        body: TabBarView(
-          children: [
-            // Tab 1: Home
-            buildHomeTab(theme),
-
-            // Tab 2: Profile
-            ProfileTab(theme: theme),
-
-            // Tab 3: Settings
-            SettingsTab(
-              theme: theme,
-              isDarkMode: _isDarkMode,
-              toggleTheme: _toggleTheme,
-            ),
-          ],
-        ),
-        floatingActionButton: SportalFloatingActionButton(
-          theme: theme,
-          showEventDialog:
-              true, // This will make it show the dialog when pressed
-        ),
-        // Optional: Position the FAB
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       ),
     );
   }

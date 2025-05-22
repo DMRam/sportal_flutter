@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sportal/core/app_theme.dart';
-import 'package:sportal/features/home/presentation/widgets/counter_card.dart';
-import 'package:sportal/features/home/presentation/widgets/sportal_card.dart';
 import 'package:sportal/features/home/presentation/widgets/sportal_card_stack.dart';
 import 'package:sportal/features/home/presentation/widgets/stat_card_row.dart';
 
@@ -11,21 +9,25 @@ Widget buildHomeTab(AppTheme theme) {
     SportalCardData(
       sport: 'Futsal',
       icon: '⚽',
-      skillRatings: {'Pase': 3.8, 'Defensa': 4.2, 'Regate': 3.5, 'Tiro': 4.0},
+      skillRatings: {
+        'Pass': 3.8,
+        'Defense': 4.2,
+        'Dribbling': 3.5,
+        'Shoot': 4.0,
+      },
       challengesCompleted: 12,
     ),
     SportalCardData(
       sport: 'Volleyball',
       icon: '🏐',
       skillRatings: {
-        'Saque': 3.2,
-        'Bloqueo': 3.8,
-        'Remate': 4.1,
-        'Recepcion': 3.5,
+        'Serve': 3.2,
+        'Block': 3.8,
+        'Spike': 4.1,
+        'Reception': 3.5,
       },
       challengesCompleted: 8,
     ),
-    // Add more sports as needed
   ];
 
   return SingleChildScrollView(

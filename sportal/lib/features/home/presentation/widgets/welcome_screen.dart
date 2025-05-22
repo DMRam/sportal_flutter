@@ -97,8 +97,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 children: [
                   const Spacer(flex: 3),
                   const Icon(
-                    Icons.sports_soccer,
-                    color: Colors.white,
+                    Icons.sports_soccer_outlined,
+                    color:  Color.fromARGB(217, 255, 255, 255),
                     size: 64,
                   ),
                   const SizedBox(height: 16),
@@ -107,20 +107,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                      color: const Color.fromARGB(255, 169, 185, 248),
                       shadows: [
                         Shadow(
                           blurRadius: 10,
+                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.8),
-                          offset: const Offset(0, 3),
+                          offset: const Offset(0, 1),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Your portal to all things sports',
-                    style: TextStyle(fontSize: 18, color: Colors.white70),
+                    'Your portal to all sports',
+                    style: TextStyle(fontSize: 18, color: const Color.fromARGB(217, 255, 255, 255), fontWeight: FontWeight.w900,),
                   ),
                   const Spacer(flex: 2),
                   Padding(
@@ -129,12 +130,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            207,
-                            64,
-                            255,
-                          ),
+                          backgroundColor: const Color.fromARGB(192, 207, 64, 255),
                           foregroundColor: const Color.fromARGB(
                             255,
                             58,
