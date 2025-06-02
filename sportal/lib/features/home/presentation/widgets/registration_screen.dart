@@ -1,38 +1,40 @@
 // ignore_for_file: deprecated_member_use, duplicate_ignore, use_build_context_synchronously
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sportal/core/app_theme.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegistrationScreen extends StatefulWidget {
   final AppTheme theme;
-  final VoidCallback? onSignUpPressed;
-  final VoidCallback? onForgotPasswordPressed;
+  final VoidCallback? onLoginPressed;
 
-  const LoginScreen({
+  const RegistrationScreen({
     super.key,
     required this.theme,
-    this.onSignUpPressed,
-    this.onForgotPasswordPressed,
+    this.onLoginPressed,
   });
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
+class _RegistrationScreenState extends State<RegistrationScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
   late final Animation<Offset> _slideAnimation;
 
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _rememberMe = false;
+  bool _obscureConfirmPassword = true;
+  bool _acceptTerms = false;
 
   @override
   void initState() {
@@ -57,13 +59,25 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _controller.dispose();
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_acceptTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: const Text('Please accept terms and conditions'),
+          backgroundColor: Colors.red[400],
+        ),
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
     await SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -72,7 +86,21 @@ class _LoginScreenState extends State<LoginScreen>
     try {
       // Simulate network delay
       await Future.delayed(const Duration(seconds: 2));
-      if (mounted) Navigator.pushNamed(context, '/dashboard');
+      if (mounted) {
+        Navigator.pushNamed(context, '/dashboard');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.green[200]),
+                const SizedBox(width: 12),
+                const Expanded(child: Text('Registration successful!')),
+              ],
+            ),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -85,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen>
               children: [
                 Icon(Icons.error_outline, color: Colors.red[200]),
                 const SizedBox(width: 12),
-                Expanded(child: Text('Login failed: ${e.toString()}')),
+                Expanded(child: Text('Registration failed: ${e.toString()}')),
               ],
             ),
           ),
@@ -102,10 +130,7 @@ class _LoginScreenState extends State<LoginScreen>
     final size = MediaQuery.of(context).size;
 
     return GestureDetector(
-      // This will dismiss the keyboard when tapping anywhere outside text fields
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.opaque,
       child: AnimatedBuilder(
         animation: _controller,
@@ -141,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen>
 
                     // Logo/Header
                     _buildAnimatedLogo(theme),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 30),
 
                     // Form
                     Form(
@@ -150,20 +175,28 @@ class _LoginScreenState extends State<LoginScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            // Name Field
+                            _buildNameField(theme),
+                            const SizedBox(height: 20),
+
                             // Email Field
                             _buildEmailField(theme),
                             const SizedBox(height: 20),
 
                             // Password Field
                             _buildPasswordField(theme),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 20),
 
-                            // Remember Me & Forgot Password
-                            _buildRememberMeRow(theme),
+                            // Confirm Password Field
+                            _buildConfirmPasswordField(theme),
+                            const SizedBox(height: 15),
+
+                            // Terms Checkbox
+                            _buildTermsCheckbox(theme),
                             const SizedBox(height: 25),
 
-                            // Login Button
-                            _buildLoginButton(theme),
+                            // Register Button
+                            _buildRegisterButton(theme),
                           ],
                         ),
                       ),
@@ -179,8 +212,8 @@ class _LoginScreenState extends State<LoginScreen>
                     _buildSocialLoginButtons(theme),
                     const SizedBox(height: 30),
 
-                    // Sign Up Prompt
-                    _buildSignUpPrompt(theme),
+                    // Login Prompt
+                    _buildLoginPrompt(theme),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -204,9 +237,7 @@ class _LoginScreenState extends State<LoginScreen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                // ignore: deprecated_member_use
                 theme.primaryColor.withOpacity(0.2),
-                // ignore: deprecated_member_use
                 theme.primaryColor.withOpacity(0.4),
               ],
               begin: Alignment.topLeft,
@@ -222,11 +253,11 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ],
           ),
-          child: Icon(Icons.lock_person, size: 40, color: theme.primaryColor),
+          child: Icon(Icons.person_add, size: 40, color: theme.primaryColor),
         ),
         const SizedBox(height: 20),
         Text(
-          'Welcome Back',
+          'Create Account',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -236,10 +267,54 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ),
         Text(
-          'Login to continue to your account',
+          'Fill in your details to get started',
           style: TextStyle(fontSize: 15, color: theme.secondaryTextColor),
         ),
       ],
+    );
+  }
+
+  Widget _buildNameField(AppTheme theme) {
+    return TextFormField(
+      controller: _nameController,
+      keyboardType: TextInputType.name,
+      textInputAction: TextInputAction.next,
+      autofillHints: const [AutofillHints.name],
+      style: TextStyle(color: theme.primaryTextColor, fontSize: 15),
+      decoration: InputDecoration(
+        hintText: 'Full name',
+        hintStyle: TextStyle(color: theme.secondaryTextColor.withOpacity(0.7)),
+        prefixIcon: Icon(
+          Icons.person_outline,
+          color: theme.secondaryTextColor.withOpacity(0.7),
+        ),
+        filled: true,
+        fillColor: theme.cardColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 20,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: theme.secondaryTextColor.withOpacity(0.05),
+            width: 1,
+          ),
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your name';
+        }
+        if (value.length < 3) {
+          return 'Name must be at least 3 characters';
+        }
+        return null;
+      },
     );
   }
 
@@ -291,8 +366,8 @@ class _LoginScreenState extends State<LoginScreen>
     return TextFormField(
       controller: _passwordController,
       obscureText: _obscurePassword,
-      textInputAction: TextInputAction.done,
-      autofillHints: const [AutofillHints.password],
+      textInputAction: TextInputAction.next,
+      autofillHints: const [AutofillHints.newPassword],
       style: TextStyle(color: theme.primaryTextColor, fontSize: 15),
       decoration: InputDecoration(
         hintText: 'Password',
@@ -334,10 +409,73 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter your password';
+          return 'Please enter a password';
         }
         if (value.length < 6) {
           return 'Password must be at least 6 characters';
+        }
+        if (!RegExp(r'[A-Z]').hasMatch(value)) {
+          return 'Password must contain at least one uppercase letter';
+        }
+        if (!RegExp(r'[0-9]').hasMatch(value)) {
+          return 'Password must contain at least one number';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildConfirmPasswordField(AppTheme theme) {
+    return TextFormField(
+      controller: _confirmPasswordController,
+      obscureText: _obscureConfirmPassword,
+      textInputAction: TextInputAction.done,
+      autofillHints: const [AutofillHints.newPassword],
+      style: TextStyle(color: theme.primaryTextColor, fontSize: 15),
+      decoration: InputDecoration(
+        hintText: 'Confirm password',
+        hintStyle: TextStyle(color: theme.secondaryTextColor.withOpacity(0.7)),
+        prefixIcon: Icon(
+          Icons.lock_outline,
+          color: theme.secondaryTextColor.withOpacity(0.7),
+        ),
+        suffixIcon: IconButton(
+          icon: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Icon(
+              _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+              key: ValueKey<bool>(_obscureConfirmPassword),
+              color: theme.secondaryTextColor.withOpacity(0.5),
+            ),
+          ),
+          onPressed: () {
+            setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+          },
+        ),
+        filled: true,
+        fillColor: theme.cardColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 20,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: theme.secondaryTextColor.withOpacity(0.05),
+            width: 1,
+          ),
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please confirm your password';
+        }
+        if (value != _passwordController.text) {
+          return 'Passwords do not match';
         }
         return null;
       },
@@ -345,47 +483,68 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _buildRememberMeRow(AppTheme theme) {
+  Widget _buildTermsCheckbox(AppTheme theme) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Theme(
-              data: Theme.of(context).copyWith(
-                unselectedWidgetColor: theme.secondaryTextColor.withOpacity(
-                  0.5,
-                ),
+        Theme(
+          data: Theme.of(context).copyWith(
+            unselectedWidgetColor: theme.secondaryTextColor.withOpacity(0.5),
+          ),
+          child: Transform.scale(
+            scale: 0.9,
+            child: Checkbox(
+              value: _acceptTerms,
+              onChanged: (value) {
+                setState(() => _acceptTerms = value ?? false);
+              },
+              activeColor: theme.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
               ),
-              child: Transform.scale(
-                scale: 0.9,
-                child: Checkbox(
-                  value: _rememberMe,
-                  onChanged: (value) {
-                    setState(() => _rememberMe = value ?? false);
-                  },
-                  activeColor: theme.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            Text(
-              'Remember me',
-              style: TextStyle(color: theme.secondaryTextColor, fontSize: 14),
-            ),
-          ],
+          ),
         ),
-        TextButton(
-          onPressed: widget.onForgotPasswordPressed,
-          child: Text(
-            'Forgot password?',
-            style: TextStyle(
-              color: theme.primaryColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  color: theme.secondaryTextColor,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
+                children: [
+                  const TextSpan(text: 'I agree to the '),
+                  TextSpan(
+                    text: 'Terms of Service',
+                    style: TextStyle(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    recognizer:
+                        TapGestureRecognizer()
+                          ..onTap = () {
+                            // Show terms dialog
+                          },
+                  ),
+                  const TextSpan(text: ' and '),
+                  TextSpan(
+                    text: 'Privacy Policy',
+                    style: TextStyle(
+                      color: theme.primaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    recognizer:
+                        TapGestureRecognizer()
+                          ..onTap = () {
+                            // Show privacy policy dialog
+                          },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -393,7 +552,7 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _buildLoginButton(AppTheme theme) {
+  Widget _buildRegisterButton(AppTheme theme) {
     return SizedBox(
       height: 52,
       child: AnimatedContainer(
@@ -435,7 +594,7 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   )
                   : Text(
-                    'Login',
+                    'Register',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -459,7 +618,7 @@ class _LoginScreenState extends State<LoginScreen>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'Or continue with',
+            'Or sign up with',
             style: TextStyle(color: theme.secondaryTextColor, fontSize: 13),
           ),
         ),
@@ -529,38 +688,19 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  Widget _buildSignUpPrompt(AppTheme theme) {
+  Widget _buildLoginPrompt(AppTheme theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Don't have an account? ",
+          'Already have an account? ',
           style: TextStyle(color: theme.secondaryTextColor, fontSize: 14),
         ),
         GestureDetector(
           onTap:
               _isLoading
-                  ? () {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Please wait...'),
-                          duration: const Duration(seconds: 1),
-                        ),
-                      );
-                    }
-                  }
-                  : () {
-                    // Use the callback if provided, otherwise use default navigation
-                    if (widget.onSignUpPressed != null) {
-                      widget.onSignUpPressed!();
-                    } else {
-                      if (mounted) {
-                        Navigator.of(context).pushNamed('/register');
-                      }
-                    }
-                  },
-          behavior: HitTestBehavior.opaque, // Ensure entire area is tappable
+                  ? null
+                  : widget.onLoginPressed ?? () => Navigator.pop(context),
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
             child: AnimatedContainer(
@@ -577,7 +717,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
               ),
               child: Text(
-                'Sign Up',
+                'Login',
                 style: TextStyle(
                   color:
                       _isLoading

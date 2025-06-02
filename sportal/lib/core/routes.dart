@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sportal/core/app_theme.dart';
 import 'package:sportal/features/home/home_screen.dart';
 import 'package:sportal/features/home/presentation/widgets/login_screen.dart';
+import 'package:sportal/features/home/presentation/widgets/registration_screen.dart';
 import 'package:sportal/features/home/presentation/widgets/welcome_screen.dart';
 
 class AppRouter {
@@ -17,6 +18,10 @@ class AppRouter {
         );
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const Sportal());
+      case '/register':
+        return MaterialPageRoute(
+          builder: (_) => RegistrationScreen(theme: DarkTheme()),
+        );
       default:
         return MaterialPageRoute(
           builder:
